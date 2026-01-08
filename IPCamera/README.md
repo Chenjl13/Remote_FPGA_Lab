@@ -6,8 +6,10 @@ Particularly, Raspberry Pi 5 is hot-swappable, which means it is very convenient
 
 ## Two Ways To Set Up The Camera
 ### Mplayer
+- [Mplayer](./Mplayer.md)
 
 ### Motion (We finally apply into our system)
+- [Motion](./Motion.md)
 
 
 
