@@ -24,7 +24,7 @@ module rd_ctrl #(
     output     [2:0]                     axi_arsize    ,
     output     [1:0]                     axi_arburst   ,
     output reg                           axi_arvalid   =0, 
-    input                                axi_arready   ,      
+    input                                axi_arready   ,
                                          
     output                               axi_rready    ,
     input   [MEM_DQ_WIDTH*8-1:0]         axi_rdata     ,
@@ -56,7 +56,7 @@ module rd_ctrl #(
                     test_rd_state <= E_RD;
             end
             E_RD: begin                
-                if (axi_arvalid&axi_arready)
+                if (axi_arvalid & axi_arready)
                     test_rd_state <= E_END;
             end
             E_END:  begin
@@ -72,44 +72,43 @@ module rd_ctrl #(
     always @(posedge clk or negedge rst_n)
     begin
        if (!rst_n)
-           rd_delay_cnt       <= 4'b0; 
-       else if((test_rd_state == E_END))
+           rd_delay_cnt <= 4'b0; 
+       else if(test_rd_state == E_END)
            rd_delay_cnt <= rd_delay_cnt + 1'b1;
        else
-           rd_delay_cnt       <= 4'b0; 
+           rd_delay_cnt <= 4'b0; 
     end
     
     always @(posedge clk or negedge rst_n)
     begin
        if (!rst_n) begin
-           axi_araddr     <= {CTRL_ADDR_WIDTH{1'b0}}; 
-           axi_arid       <= 4'b0; 
-           axi_arlen      <= 4'b0; 
+           axi_araddr <= {CTRL_ADDR_WIDTH{1'b0}}; 
+           axi_arid   <= 4'b0; 
+           axi_arlen  <= 4'b0; 
        end
        else if((test_rd_state == E_IDLE) & read_en)
        begin
-           axi_arid <= read_id;
+           axi_arid   <= read_id;
            axi_araddr <= read_addr;
-           axi_arlen  <=  read_len;              
+           axi_arlen  <= read_len;              
        end
     end
     
     always @(posedge clk or negedge rst_n)
     begin
     	if (!rst_n) begin
-            axi_arvalid    <= 1'b0; 
-            read_done_p    <= 1'b0;
+            axi_arvalid <= 1'b0; 
+            read_done_p <= 1'b0;
     	end
     	else begin
         	case (test_rd_state)
                 E_IDLE: begin
-                    read_done_p <= 1'b0 ;
+                    read_done_p <= 1'b0;
                     axi_arvalid <= 1'b0;
                 end
                 E_RD: begin
                     axi_arvalid <= 1'b1;   
-                                   
-                    if (axi_arvalid&axi_arready)
+                    if (axi_arvalid & axi_arready)
                         axi_arvalid <= 1'b0; 
                 end
                 E_END: begin
@@ -125,10 +124,9 @@ module rd_ctrl #(
     	end
     end
 
-    assign axi_ready = read_ready;
-    assign read_rdata = axi_rdata;
+    assign axi_ready     = read_ready;
+    assign read_rdata    = axi_rdata;
     assign read_rdata_en = axi_rvalid;
-    assign axi_rready = 1'b1;
+    assign axi_rready    = 1'b1;
  
 endmodule  
-                

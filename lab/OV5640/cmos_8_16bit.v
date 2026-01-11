@@ -25,92 +25,92 @@ reg [7:0] pdata_i_reg;
 reg de_i_r,de_i_r1;
 reg			de_out3          ;
 reg [15:0]	pdata_out3       ;  
-
 always @(posedge pclk)begin
        vs_i_reg <= vs_i ;
 end
-
-always@(posedge pclk)
-begin
-    if(!rst_n)
-        enble <= 1'b0;
-    else if(!vs_i_reg&&vs_i)
-        enble <= 1'b1;
-    else
-        enble <= enble;
-end
+    always@(posedge pclk)
+        begin
+            if(!rst_n)
+                enble <= 1'b0;
+            else if(!vs_i_reg&&vs_i)
+                enble <= 1'b1;
+            else
+                enble <= enble;
+        end
 
 GTP_IOCLKBUF #(
     .GATE_EN("FALSE")
 ) u_GTP_IOCLKBUF (
-    .CLKOUT(pclk_IOCLKBUF), 
-    .CLKIN(pclk),  
-    .DI(enble)      
+    .CLKOUT(pclk_IOCLKBUF),  
+    .CLKIN(pclk),   
+    .DI(enble)       
 );
 
 GTP_IOCLKDIV #(
     .GRS_EN("TRUE"),
     .DIV_FACTOR("2")
 ) u_GTP_IOCLKDIV (
-    .CLKDIVOUT(pixel_clk), 
+    .CLKDIVOUT(pixel_clk),  
     .CLKIN(pclk_IOCLKBUF),     
-    .RST_N(enble)      
+    .RST_N(enble)       
 );
 
-always@(posedge pclk)
-begin
-    if(!rst_n)
-        cnt <= 2'b0;
-    else if(de_i == 1'b1 && cnt == 2'd1)
-        cnt <= 2'b0;
-    else if(de_i == 1'b1)
-        cnt <= cnt + 1'b1;
-end
+    always@(posedge pclk)
+        begin
+            if(!rst_n)
+                cnt <= 2'b0;
+            else if(de_i == 1'b1 && cnt == 2'd1)
+                cnt <= 2'b0;
+            else if(de_i == 1'b1)
+                cnt <= cnt + 1'b1;
+        end
+    
 
-always@(posedge pclk)
-begin
-    if(!rst_n)
-        pdata_i_reg <= 8'b0;
-    else if(de_i == 1'b1)
-        pdata_i_reg <= pdata_i;
-end
+    always@(posedge pclk)
+        begin
+            if(!rst_n)
+                pdata_i_reg <= 8'b0;
+            else if(de_i == 1'b1)
+                pdata_i_reg <= pdata_i;
+        end
+    
+    always@(posedge pclk)
+        begin
+            if(!rst_n)
+                pdata_out1 <= 16'b0;
+            else if(de_i == 1'b1 && cnt == 2'd1)
+                pdata_out1 <= {pdata_i_reg,pdata_i};
+        end
+  
 
-always@(posedge pclk)
-begin
-    if(!rst_n)
-        pdata_out1 <= 16'b0;
-    else if(de_i == 1'b1 && cnt == 2'd1)
-        pdata_out1 <= {pdata_i_reg,pdata_i};
-end
+   always@(posedge pclk)begin
+        de_i_r <= de_i;
+        de_i_r1 <= de_i_r;
+   end
+    always@(posedge pclk)
+        begin
+            if(!rst_n)
+                de_out1 <= 1'b0;
+            else if(!de_i_r1 && de_i_r )
+                de_out1 <= 1'b1;
+            else if(de_i_r1 && !de_i_r )
+                de_out1 <= 1'b0;
+            else
+                de_out1 <= de_out1;
+        end
 
-always@(posedge pclk)begin
-    de_i_r <= de_i;
-    de_i_r1 <= de_i_r;
-end
 
-always@(posedge pclk)
-begin
-    if(!rst_n)
-        de_out1 <= 1'b0;
-    else if(!de_i_r1 && de_i_r )
-        de_out1 <= 1'b1;
-    else if(de_i_r1 && !de_i_r )
-        de_out1 <= 1'b0;
-    else
-        de_out1 <= de_out1;
-end
-
-always@(posedge pixel_clk)begin
-    de_out2<=de_out1;
-    de_out3<=de_out2;
-    de_o   <=de_out3;
-end
-
-always@(posedge pixel_clk)begin
-    pdata_out2<=pdata_out1;
-    pdata_out3<=pdata_out2;
-    pdata_o   <=pdata_out3;
-end
+ 
+    always@(posedge pixel_clk)begin
+        de_out2<=de_out1;
+        de_out3<=de_out2;
+        de_o   <=de_out3;
+    end
+    always@(posedge pixel_clk)begin
+        pdata_out2<=pdata_out1;
+        pdata_out3<=pdata_out2;
+        pdata_o   <=pdata_out3;
+    end
 endmodule
 
 
@@ -138,90 +138,90 @@ reg [7:0] pdata_i_reg;
 reg de_i_r,de_i_r1;
 reg			de_out3          ;
 reg [15:0]	pdata_out3       ;  
-
 always @(posedge pclk)begin
        vs_i_reg <= vs_i ;
 end
-
-always@(posedge pclk)
-begin
-    if(!rst_n)
-        enble <= 1'b0;
-    else if(!vs_i_reg&&vs_i)
-        enble <= 1'b1;
-    else
-        enble <= enble;
-end
+    always@(posedge pclk)
+        begin
+            if(!rst_n)
+                enble <= 1'b0;
+            else if(!vs_i_reg&&vs_i)
+                enble <= 1'b1;
+            else
+                enble <= enble;
+        end
 
 GTP_IOCLKBUF #(
     .GATE_EN("FALSE")
 ) u_GTP_IOCLKBUF (
-    .CLKOUT(pclk_IOCLKBUF), 
-    .CLKIN(pclk),  
-    .DI(enble)      
+    .CLKOUT(pclk_IOCLKBUF),  
+    .CLKIN(pclk),   
+    .DI(enble)       
 );
 
 GTP_IOCLKDIV #(
     .GRS_EN("TRUE"),
     .DIV_FACTOR("2")
 ) u_GTP_IOCLKDIV (
-    .CLKDIVOUT(pixel_clk), 
+    .CLKDIVOUT(pixel_clk),  
     .CLKIN(pclk_IOCLKBUF),     
-    .RST_N(enble)      
+    .RST_N(enble)       
 );
 
-always@(posedge pclk)
-begin
-    if(!rst_n)
-        cnt <= 2'b0;
-    else if(de_i == 1'b1 && cnt == 2'd1)
-        cnt <= 2'b0;
-    else if(de_i == 1'b1)
-        cnt <= cnt + 1'b1;
-end
+    always@(posedge pclk)
+        begin
+            if(!rst_n)
+                cnt <= 2'b0;
+            else if(de_i == 1'b1 && cnt == 2'd1)
+                cnt <= 2'b0;
+            else if(de_i == 1'b1)
+                cnt <= cnt + 1'b1;
+        end
+    
 
-always@(posedge pclk)
-begin
-    if(!rst_n)
-        pdata_i_reg <= 8'b0;
-    else if(de_i == 1'b1)
-        pdata_i_reg <= pdata_i;
-end
+    always@(posedge pclk)
+        begin
+            if(!rst_n)
+                pdata_i_reg <= 8'b0;
+            else if(de_i == 1'b1)
+                pdata_i_reg <= pdata_i;
+        end
+    
+    always@(posedge pclk)
+        begin
+            if(!rst_n)
+                pdata_out1 <= 16'b0;
+            else if(de_i == 1'b1 && cnt == 2'd1)
+                pdata_out1 <= {pdata_i_reg,pdata_i};
+        end
+  
 
-always@(posedge pclk)
-begin
-    if(!rst_n)
-        pdata_out1 <= 16'b0;
-    else if(de_i == 1'b1 && cnt == 2'd1)
-        pdata_out1 <= {pdata_i_reg,pdata_i};
-end
+   always@(posedge pclk)begin
+        de_i_r <= de_i;
+        de_i_r1 <= de_i_r;
+   end
+    always@(posedge pclk)
+        begin
+            if(!rst_n)
+                de_out1 <= 1'b0;
+            else if(!de_i_r1 && de_i_r )
+                de_out1 <= 1'b1;
+            else if(de_i_r1 && !de_i_r )
+                de_out1 <= 1'b0;
+            else
+                de_out1 <= de_out1;
+        end
 
-always@(posedge pclk)begin
-    de_i_r <= de_i;
-    de_i_r1 <= de_i_r;
-end
 
-always@(posedge pclk)
-begin
-    if(!rst_n)
-        de_out1 <= 1'b0;
-    else if(!de_i_r1 && de_i_r )
-        de_out1 <= 1'b1;
-    else if(de_i_r1 && !de_i_r )
-        de_out1 <= 1'b0;
-    else
-        de_out1 <= de_out1;
-end
-
-always@(posedge pixel_clk)begin
-    de_out2<=de_out1;
-    de_out3<=de_out2;
-    de_o   <=de_out3;
-end
-
-always@(posedge pixel_clk)begin
-    pdata_out2<=pdata_out1;
-    pdata_out3<=pdata_out2;
-    pdata_o   <=pdata_out3;
-end
+ 
+    always@(posedge pixel_clk)begin
+        de_out2<=de_out1;
+        de_out3<=de_out2;
+        de_o   <=de_out3;
+    end
+    always@(posedge pixel_clk)begin
+        pdata_out2<=pdata_out1;
+        pdata_out3<=pdata_out2;
+        pdata_o   <=pdata_out3;
+    end
 endmodule

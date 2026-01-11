@@ -4,7 +4,6 @@
 module sync_vg # (
     parameter               X_BITS=12,
     parameter               Y_BITS=12,
- 
     parameter V_TOTAL = 12'd750,
     parameter V_FP = 12'd5,
     parameter V_BP = 12'd20,
@@ -16,7 +15,6 @@ module sync_vg # (
     parameter H_SYNC = 12'd40,
     parameter H_ACT = 12'd1280,
     parameter HV_OFFSET = 12'd0 
-
 )(
     input                   clk,
     input                   rstn,
@@ -44,7 +42,6 @@ module sync_vg # (
         end
     end
     
-
     always @(posedge clk)
     begin
         if (!rstn)

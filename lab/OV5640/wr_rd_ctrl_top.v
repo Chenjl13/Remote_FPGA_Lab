@@ -59,7 +59,7 @@ module wr_rd_ctrl_top # (
     input                        axi_rvalid,
     input                        axi_rlast,
     input  [3:0]                 axi_rid,
-    input  [1:0]                 axi_rresp   
+    input  [1:0]                 axi_rresp
 );
 
     wire                        wr_en;            
@@ -78,112 +78,112 @@ module wr_rd_ctrl_top # (
     wire                        rd_done_p;   
 
     wr_cmd_trans#(
-        .CTRL_ADDR_WIDTH  (  CTRL_ADDR_WIDTH  ),
-        .MEM_DQ_WIDTH     (  MEM_DQ_WIDTH     )
+        .CTRL_ADDR_WIDTH  (CTRL_ADDR_WIDTH),
+        .MEM_DQ_WIDTH     (MEM_DQ_WIDTH)
     ) wr_cmd_trans (                      
-        .clk              (  clk              ),
-        .rstn             (  rstn             ),
+        .clk              (clk),
+        .rstn             (rstn),
                     
-        .wr_cmd_en        (  wr_cmd_en        ),
-        .wr_cmd_addr      (  wr_cmd_addr      ),
-        .wr_cmd_len       (  wr_cmd_len       ),
-        .wr_cmd_ready     (  wr_cmd_ready     ),
-        .wr_cmd_done      (  wr_cmd_done      ),
-        .wr_bac           (  wr_bac           ),
-        .wr_ctrl_data     (  wr_ctrl_data     ),
-        .wr_data_re       (  wr_data_re       ),
+        .wr_cmd_en        (wr_cmd_en),
+        .wr_cmd_addr      (wr_cmd_addr),
+        .wr_cmd_len       (wr_cmd_len),
+        .wr_cmd_ready     (wr_cmd_ready),
+        .wr_cmd_done      (wr_cmd_done),
+        .wr_bac           (wr_bac),
+        .wr_ctrl_data     (wr_ctrl_data),
+        .wr_data_re       (wr_data_re),
                                 
-        .wr_en            (  wr_en            ),       
-        .wr_addr          (  wr_addr          ),      
-        .wr_id            (  wr_id            ),        
-        .wr_len           (  wr_len           ),       
-        .wr_data_en       (  wr_data_en       ),
-        .wr_data          (  wr_data          ),
-        .wr_ready         (  wr_ready         ),
-        .wr_done          (  wr_done          ),
+        .wr_en            (wr_en),
+        .wr_addr          (wr_addr),
+        .wr_id            (wr_id),
+        .wr_len           (wr_len),
+        .wr_data_en       (wr_data_en),
+        .wr_data          (wr_data),
+        .wr_ready         (wr_ready),
+        .wr_done          (wr_done),
                                               
-        .rd_cmd_en        (  rd_cmd_en        ),
-        .rd_cmd_addr      (  rd_cmd_addr      ),
-        .rd_cmd_len       (  rd_cmd_len       ),
-        .rd_cmd_ready     (  rd_cmd_ready     ),
-        .rd_cmd_done      (  rd_cmd_done      ),
-        .read_en          (  read_en          ),
+        .rd_cmd_en        (rd_cmd_en),
+        .rd_cmd_addr      (rd_cmd_addr),
+        .rd_cmd_len       (rd_cmd_len),
+        .rd_cmd_ready     (rd_cmd_ready),
+        .rd_cmd_done      (rd_cmd_done),
+        .read_en          (read_en),
                                               
-        .rd_en            (  rd_en            ),                 
-        .rd_addr          (  rd_addr          ),           
-        .rd_id            (  rd_id            ),           
-        .rd_len           (  rd_len           ),           
-        .rd_done_p        (  rd_done_p        )     
+        .rd_en            (rd_en),
+        .rd_addr          (rd_addr),
+        .rd_id            (rd_id),
+        .rd_len           (rd_len),
+        .rd_done_p        (rd_done_p)
     );
 
     wr_ctrl #(
-        .CTRL_ADDR_WIDTH  (  CTRL_ADDR_WIDTH  ),
-        .MEM_DQ_WIDTH     (  MEM_DQ_WIDTH     )
-    )wr_ctrl(                        
-        .clk              (  clk              ),
-        .rst_n            (  rstn             ), 
+        .CTRL_ADDR_WIDTH  (CTRL_ADDR_WIDTH),
+        .MEM_DQ_WIDTH     (MEM_DQ_WIDTH)
+    ) wr_ctrl (                        
+        .clk              (clk),
+        .rst_n            (rstn),
                                               
-        .wr_en            (  wr_en            ),
-        .wr_addr          (  wr_addr          ),     
-        .wr_id            (  wr_id            ),
-        .wr_len           (  wr_len           ),
-        .wr_cmd_done      (  wr_done          ),
-        .wr_ready         (  wr_ready         ),
-        .wr_data_en       (  wr_data_en       ),
-        .wr_data          (  wr_data          ),
-        .wr_bac           (  wr_bac           ),
+        .wr_en            (wr_en),
+        .wr_addr          (wr_addr),
+        .wr_id            (wr_id),
+        .wr_len           (wr_len),
+        .wr_cmd_done      (wr_done),
+        .wr_ready         (wr_ready),
+        .wr_data_en       (wr_data_en),
+        .wr_data          (wr_data),
+        .wr_bac           (wr_bac),
                                               
-        .axi_awaddr       (  axi_awaddr       ),  
-        .axi_awid         (  axi_awid         ),
-        .axi_awlen        (  axi_awlen        ),
-        .axi_awsize       (  axi_awsize       ),
-        .axi_awburst      (  axi_awburst      ),
-        .axi_awready      (  axi_awready      ),
-        .axi_awvalid      (  axi_awvalid      ),
+        .axi_awaddr       (axi_awaddr),
+        .axi_awid         (axi_awid),
+        .axi_awlen        (axi_awlen),
+        .axi_awsize       (axi_awsize),
+        .axi_awburst      (axi_awburst),
+        .axi_awready      (axi_awready),
+        .axi_awvalid      (axi_awvalid),
                                               
-        .axi_wdata        (  axi_wdata        ),
-        .axi_wstrb        (  axi_wstrb        ),
-        .axi_wlast        (  axi_wlast        ),
-        .axi_wvalid       (  axi_wvalid       ),
-        .axi_wready       (  axi_wready       ),
-        .axi_bid          (  axi_bid          ),
-        .axi_bresp        (  axi_bresp        ),
-        .axi_bvalid       (  axi_bvalid       ),
-        .axi_bready       (  axi_bready       ),
-        .test_wr_state    (                   )
+        .axi_wdata        (axi_wdata),
+        .axi_wstrb        (axi_wstrb),
+        .axi_wlast        (axi_wlast),
+        .axi_wvalid       (axi_wvalid),
+        .axi_wready       (axi_wready),
+        .axi_bid          (axi_bid),
+        .axi_bresp        (axi_bresp),
+        .axi_bvalid       (axi_bvalid),
+        .axi_bready       (axi_bready),
+        .test_wr_state    ()
     );
 
     rd_ctrl #(
-        .CTRL_ADDR_WIDTH  (  CTRL_ADDR_WIDTH  ),
-        .MEM_DQ_WIDTH     (  MEM_DQ_WIDTH     ) 
-    )rd_ctrl(                               
-        .clk              (  clk              ),
-        .rst_n            (  rstn             ),
+        .CTRL_ADDR_WIDTH  (CTRL_ADDR_WIDTH),
+        .MEM_DQ_WIDTH     (MEM_DQ_WIDTH)
+    ) rd_ctrl (                               
+        .clk              (clk),
+        .rst_n            (rstn),
                                                                                   
-        .read_addr        (  rd_addr          ),
-        .read_id          (  rd_id            ),
-        .read_len         (  rd_len           ),
-        .read_en          (  rd_en            ),
-        .read_done_p      (  rd_done_p        ),
+        .read_addr        (rd_addr),
+        .read_id          (rd_id),
+        .read_len         (rd_len),
+        .read_en          (rd_en),
+        .read_done_p      (rd_done_p),
                                                                                  
-        .read_ready       (  read_ready       ),
-        .read_rdata       (  read_rdata       ),
-        .read_rdata_en    (  read_en          ),
+        .read_ready       (read_ready),
+        .read_rdata       (read_rdata),
+        .read_rdata_en    (read_en),
                                                                                    
-        .axi_araddr       (  axi_araddr       ),    
-        .axi_arid         (  axi_arid         ),
-        .axi_arlen        (  axi_arlen        ),
-        .axi_arsize       (  axi_arsize       ),
-        .axi_arburst      (  axi_arburst      ),
-        .axi_arvalid      (  axi_arvalid      ), 
-        .axi_arready      (  axi_arready      ),
+        .axi_araddr       (axi_araddr),
+        .axi_arid         (axi_arid),
+        .axi_arlen        (axi_arlen),
+        .axi_arsize       (axi_arsize),
+        .axi_arburst      (axi_arburst),
+        .axi_arvalid      (axi_arvalid),
+        .axi_arready      (axi_arready),
                                                                                  
-        .axi_rready       (  axi_rready       ),
-        .axi_rdata        (  axi_rdata        ),
-        .axi_rvalid       (  axi_rvalid       ),
-        .axi_rlast        (  axi_rlast        ),
-        .axi_rid          (  axi_rid          ),
-        .axi_rresp        (  axi_rresp        )
+        .axi_rready       (axi_rready),
+        .axi_rdata        (axi_rdata),
+        .axi_rvalid       (axi_rvalid),
+        .axi_rlast        (axi_rlast),
+        .axi_rid          (axi_rid),
+        .axi_rresp        (axi_rresp)
     );
 
 endmodule

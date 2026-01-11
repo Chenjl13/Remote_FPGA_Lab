@@ -15,7 +15,6 @@ module ms7210_ctl(
     input               byte_over 
 );
     assign device_id = 8'hB2;
-
 function [23:0] cmd_data;
 input [5:0] index;
     begin
@@ -79,7 +78,6 @@ endfunction
     parameter    WAIT   = 6'b00_1000;
     parameter    SETING = 6'b01_0000;
     parameter    STA_RD = 6'b10_0000;
-
     reg [ 5:0]   state;
     reg [ 5:0]   state_n;
     reg [ 4:0]   dri_cnt;
@@ -108,19 +106,24 @@ endfunction
         state_n = state;
         case(state)
             IDLE     : state_n = CONECT;
-            CONECT   :
-                if(dri_cnt == 5'd1 && busy_falling && data_out == 8'h5A)
-                    state_n = INIT;
-            INIT     :
-                if(dri_cnt == 5'd18 && busy_falling)
-                    state_n = WAIT;
-            WAIT     :
-                if(delay_cnt == 22'h30D399)
-                    state_n = SETING;
-            SETING   :
-                if(dri_cnt == 5'd29 && busy_falling)
-                    state_n = STA_RD;
-            default  : state_n = state;
+            CONECT   : if(dri_cnt == 5'd1 && busy_falling && data_out == 8'h5A)
+                            state_n = INIT;
+                        else
+                            state_n = state;
+            INIT     : if(dri_cnt == 5'd18 && busy_falling)
+                            state_n = WAIT;
+                        else
+                            state_n = state;
+            WAIT     : if(delay_cnt == 22'h30D399)
+                            state_n = SETING;
+                        else
+                            state_n = state;
+            SETING   : if(dri_cnt == 5'd29 && busy_falling)
+                            state_n = STA_RD;
+                        else
+                            state_n = state;
+            STA_RD   : state_n = state;
+            default  : state_n = IDLE;
         endcase
     end
     
@@ -131,17 +134,16 @@ endfunction
         else
         begin
             case(state)
-                IDLE, WAIT, STA_RD : dri_cnt <= 5'd0;
-                CONECT :
-                    if(busy_falling)
-                        dri_cnt <= (dri_cnt == 5'd1) ? 5'd0 : dri_cnt + 5'd1;
-                INIT   :
-                    if(busy_falling)
-                        dri_cnt <= (dri_cnt == 5'd18) ? 5'd0 : dri_cnt + 5'd1;
-                SETING :
-                    if(busy_falling)
-                        dri_cnt <= (dri_cnt == 5'd29) ? 5'd0 : dri_cnt + 5'd1;
-                default: dri_cnt <= 5'd0;
+                IDLE,
+                WAIT,
+                STA_RD   : dri_cnt <= 5'd0;
+                CONECT   : if(busy_falling)
+                                dri_cnt <= (dri_cnt == 5'd1) ? 5'd0 : dri_cnt + 5'd1;
+                INIT     : if(busy_falling)
+                                dri_cnt <= (dri_cnt == 5'd18) ? 5'd0 : dri_cnt + 5'd1;
+                SETING   : if(busy_falling)
+                                dri_cnt <= (dri_cnt == 5'd29) ? 5'd0 : dri_cnt + 5'd1;
+                default  : dri_cnt <= 5'd0;
             endcase
         end
     end
@@ -149,7 +151,12 @@ endfunction
     always @(posedge clk)
     begin
         if(state == WAIT)
-            delay_cnt <= (delay_cnt == 22'h30D399) ? 22'd0 : delay_cnt + 22'd1;
+        begin
+            if(delay_cnt == 22'h30D399)
+                delay_cnt <= 22'd0;
+            else
+                delay_cnt <= delay_cnt + 22'd1;
+        end
         else
             delay_cnt <= 22'd0;
     end
@@ -159,11 +166,17 @@ endfunction
         if(!rstn)
             iic_trig <= 1'd0;
         else
+        begin
             case(state)
                 IDLE     : iic_trig <= 1'b1;
                 WAIT     : iic_trig <= (delay_cnt == 22'h30D399);
-                default  : iic_trig <= busy_falling;
+                CONECT,
+                INIT,
+                SETING,
+                STA_RD   : iic_trig <= busy_falling;
+                default  : iic_trig <= 1'd0;
             endcase
+        end
     end
     
     always @(posedge clk)
@@ -171,14 +184,18 @@ endfunction
         if(!rstn)
             w_r <= 1'd1;
         else
+        begin
             case(state)
                 IDLE     : w_r <= 1'b1;
-                CONECT   :
-                    if(dri_cnt == 5'd0 && busy_falling) w_r <= 1'b0;
-                    else if(dri_cnt == 5'd1 && busy_falling) w_r <= 1'b1;
-                SETING   :
-                    if(dri_cnt == 5'd29 && busy_falling) w_r <= 1'b0;
+                CONECT   : if(dri_cnt == 5'd0 && busy_falling)
+                                w_r <= 1'b0;
+                            else if(dri_cnt == 5'd1 && busy_falling)
+                                w_r <= 1'b1;
+                SETING   : if(dri_cnt == 5'd29 && busy_falling)
+                                w_r <= 1'b0;
+                default  : w_r <= w_r;
             endcase
+        end
     end
     
     always @(posedge clk)
@@ -186,20 +203,25 @@ endfunction
         if(!rstn)
             cmd_index <= 6'd0;
         else
+        begin
             case(state)
-                INIT, SETING :
-                    if(byte_over)
-                        cmd_index <= cmd_index + 1'b1;
-                default :
-                    cmd_index <= cmd_index;
+                IDLE,
+                CONECT   : cmd_index <= 6'd0;
+                INIT,
+                SETING   : if(byte_over)
+                                cmd_index <= cmd_index + 1'b1;
+                            else
+                                cmd_index <= cmd_index;
+                default  : cmd_index <= cmd_index;
             endcase
+        end
     end
     
     reg [23:0] cmd_iic;
-    always @(posedge clk)
+    always@(posedge clk)
     begin
         if(~rstn)
-            cmd_iic <= 24'd0;
+            cmd_iic <= 0;
         else if(state == IDLE)
             cmd_iic <= 24'd0;
         else
@@ -214,15 +236,33 @@ endfunction
             data_in <= 8'd0;
         end
         else
+        begin
             case(state)
-                IDLE     : begin addr <= 16'h0003; data_in <= 8'h5A; end
-                CONECT   :
-                    if(dri_cnt == 5'd1 && busy_falling && data_out == 8'h5A)
-                        begin addr <= cmd_iic[23:8]; data_in <= cmd_iic[7:0]; end
-                INIT, WAIT, SETING :
-                        begin addr <= cmd_iic[23:8]; data_in <= cmd_iic[7:0]; end
-                STA_RD   : begin addr <= 16'h0502; data_in <= 8'd0; end
+                IDLE     : begin
+                    addr    <= 16'h0003;
+                    data_in <= 8'h5A;
+                end
+                CONECT   : if(dri_cnt == 5'd1 && busy_falling && data_out == 8'h5A)
+                            begin
+                                addr    <= cmd_iic[23:8];
+                                data_in <= cmd_iic[ 7:0];
+                            end
+                INIT,
+                WAIT,
+                SETING   : begin
+                    addr    <= cmd_iic[23:8];
+                    data_in <= cmd_iic[ 7:0];
+                end
+                STA_RD   : begin
+                    addr    <= 16'h0502;
+                    data_in <= 8'd0;
+                end
+                default  : begin
+                    addr    <= 0;
+                    data_in <= 0;
+                end
             endcase
+        end
     end
 
     always @(posedge clk)

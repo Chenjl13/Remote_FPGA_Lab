@@ -30,7 +30,7 @@ module ms72xx_ctl(
     wire   [7:0] device_id_rx;
     wire         iic_trig_rx ;
     wire         w_r_rx      ;
-    wire  [15:0] addr_rx;
+    wire  [15:0] addr_rx     ;
     wire  [ 7:0] data_in_rx  ;
     wire         busy_rx     ;
     wire  [ 7:0] data_out_rx ;
@@ -39,12 +39,12 @@ module ms72xx_ctl(
     wire   [7:0] device_id_tx;
     wire         iic_trig_tx ;
     wire         w_r_tx      ;
-    wire  [15:0] addr_tx;
+    wire  [15:0] addr_tx     ;
     wire  [ 7:0] data_in_tx  ;
     wire         busy_tx     ;
     wire  [ 7:0] data_out_tx ;
     wire         byte_over_tx;
-
+    
     ms7200_ctl ms7200_ctl(
         .clk             (  clk           ),
         .rstn            (  rstn          ),
@@ -74,7 +74,7 @@ module ms72xx_ctl(
         .data_out        (  data_out_tx   ),
         .byte_over       (  byte_over_tx  )
     );
-
+    
     wire         sda_in;
     wire         sda_out;
     wire         sda_out_en;  

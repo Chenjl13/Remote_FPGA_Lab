@@ -97,7 +97,7 @@ module fram_buf #(
         .wr_en            (  wr_en            ),
         .wr_data          (  wr_data          ),
         
-        .rd_bac           (  ddr_wr_bac       ),                                      
+        .rd_bac           (  ddr_wr_bac       ),                                     
         .ddr_wreq         (  ddr_wreq         ),
         .ddr_waddr        (  ddr_waddr        ),
         .ddr_wr_len       (  ddr_wr_len       ),
@@ -154,27 +154,27 @@ module fram_buf #(
         .CTRL_ADDR_WIDTH  (  CTRL_ADDR_WIDTH  ),
         .MEM_DQ_WIDTH     (  MEM_DQ_WIDTH     )
     )wr_rd_ctrl_top (                         
-        .clk              (  ddr_clk          ),           
-        .rstn             (  ddr_rstn         ),           
+        .clk              (  ddr_clk          ),
+        .rstn             (  ddr_rstn         ),
                                               
         .wr_cmd_en        (  ddr_wreq         ),
         .wr_cmd_addr      (  ddr_waddr        ),
         .wr_cmd_len       (  ddr_wr_len       ),
         .wr_cmd_ready     (  ddr_wrdy         ),
         .wr_cmd_done      (  ddr_wdone        ),
-        .wr_bac           (  ddr_wr_bac       ),                                     
+        .wr_bac           (  ddr_wr_bac       ),                                    
         .wr_ctrl_data     (  ddr_wdata        ),
         .wr_data_re       (  ddr_wdata_req    ),
                                               
         .rd_cmd_en        (  rd_cmd_en        ),
         .rd_cmd_addr      (  rd_cmd_addr      ),
         .rd_cmd_len       (  rd_cmd_len       ),
-        .rd_cmd_ready     (  rd_cmd_ready     ), 
+        .rd_cmd_ready     (  rd_cmd_ready     ),
         .rd_cmd_done      (  rd_cmd_done      ),
                                               
-        .read_ready       (  read_ready       ),    
-        .read_rdata       (  read_rdata       ),    
-        .read_en          (  read_en          ),                                          
+        .read_ready       (  read_ready       ),
+        .read_rdata       (  read_rdata       ),
+        .read_en          (  read_en          ),
                         
         .axi_awaddr       (  axi_awaddr       ),  
         .axi_awid         (  axi_awid         ),

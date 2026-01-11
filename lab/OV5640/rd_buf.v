@@ -120,15 +120,15 @@ module rd_buf #(
     end 
 
     rd_fram_buf rd_fram_buf (
-        .wr_data    (  ddr_rdata       ),           
-        .wr_addr    (  wr_addr         ),             
-        .wr_en      (  ddr_rdata_en    ),                   
-        .wr_clk     (  ddr_clk         ),                   
-        .wr_rst     (  ~ddr_rstn       ),                 
-        .rd_addr    (  rd_addr         ),           
-        .rd_data    (  rd_data         ),            
-        .rd_clk     (  vout_clk        ),                   
-        .rd_rst     (  ~ddr_rstn_2d    )                    
+        .wr_data    (  ddr_rdata       ),
+        .wr_addr    (  wr_addr         ),
+        .wr_en      (  ddr_rdata_en    ),
+        .wr_clk     (  ddr_clk         ),
+        .wr_rst     (  ~ddr_rstn       ),
+        .rd_addr    (  rd_addr         ),
+        .rd_data    (  rd_data         ),
+        .rd_clk     (  vout_clk        ),
+        .rd_rst     (  ~ddr_rstn_2d    )
     );
     
     reg [1:0] rd_cnt;

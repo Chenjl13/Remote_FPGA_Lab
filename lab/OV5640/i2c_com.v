@@ -34,12 +34,12 @@ module i2c_com(clock_i2c        ,
        if(!camera_rstn)
          cyc_count<=6'b111111;
        else 
-       begin
+		   begin
            if(start==0)
              cyc_count<=0;
            else if(cyc_count<6'b111111)
              cyc_count<=cyc_count+1;
-       end
+         end
     end
 	 
     always@(posedge clock_i2c)
@@ -98,7 +98,8 @@ module i2c_com(clock_i2c        ,
           40:sclk<=1;
           41:begin reg_sdat<=1;tr_end<=1;end
           endcase
-    end
+       
+end
 endmodule
 
 
@@ -140,12 +141,12 @@ module i2c_com(clock_i2c        ,
        if(!camera_rstn)
          cyc_count<=6'b111111;
        else 
-       begin
+		   begin
            if(start==0)
              cyc_count<=0;
            else if(cyc_count<6'b111111)
              cyc_count<=cyc_count+1;
-       end
+         end
     end
 	 
     always@(posedge clock_i2c)
@@ -204,5 +205,6 @@ module i2c_com(clock_i2c        ,
           40:sclk<=1;
           41:begin reg_sdat<=1;tr_end<=1;end
           endcase
-    end
+       
+end
 endmodule

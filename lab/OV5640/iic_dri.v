@@ -7,7 +7,7 @@ module iic_dri #(
     parameter            ADDR_BYTE = 2'd1,
     parameter            LEN_WIDTH = 8'd3,
     parameter            DATA_BYTE = 2'd1
-)(
+)(                       
     input                clk,
     input                rstn,
     input                pluse,
@@ -43,13 +43,13 @@ module iic_dri #(
     
     wire  full_cycle;
     wire  half_cycle;
-    assign full_cycle = (fre_cnt == CLK_DIV - 1'b1);
-    assign half_cycle = (fre_cnt == (CLK_DIV>>1'b1) - 1'b1);
+    assign full_cycle = (fre_cnt == CLK_DIV - 1'b1) ? 1'b1 : 1'b0;
+    assign half_cycle = (fre_cnt == (CLK_DIV>>1'b1) - 1'b1) ? 1'b1 : 1'b0;
     
     wire start_h;
     wire dsu;
-    assign start_h = (fre_cnt == DATA_SET - 1'b1);
-    assign dsu = (fre_cnt == (CLK_DIV>>1'b1) + DATA_SET - 1'b1);
+    assign start_h = (fre_cnt == DATA_SET - 1'b1) ? 1'b1 : 1'b0;
+    assign dsu = (fre_cnt == (CLK_DIV>>1'b1) + DATA_SET - 1'b1) ? 1'b1 : 1'b0;
     
     wire   start;
     reg    start_en;
@@ -80,7 +80,7 @@ module iic_dri #(
             start_en <= `UD start_en;
     end
     
-    assign start = (start_en & full_cycle);
+    assign start = (start_en & full_cycle) ? 1'b1 : 1'b0;
     
     reg w_r_1d=1'b0,w_r_2d=1'b0;
     always @(posedge clk)
@@ -148,6 +148,8 @@ module iic_dri #(
             else
                 twr_cnt <= `UD twr_cnt + 1'b1; 
         end
+        else
+            twr_cnt <= `UD twr_cnt;
     end
     
     always @(posedge clk)
@@ -166,6 +168,8 @@ module iic_dri #(
         begin
             if(half_cycle || full_cycle)
                 scl_out <= ~scl_out;
+            else
+                scl_out <= scl_out;
         end
         else
             scl_out <= 1'b1;
@@ -199,6 +203,8 @@ module iic_dri #(
                 endcase
             end
         end
+        else
+            send_data <= `UD send_data;
     end
     
     always @(posedge clk)
@@ -210,26 +216,33 @@ module iic_dri #(
             else
                 trans_byte_max <= `UD ADDR_BYTE + byte_len + 2'd2;
         end
+        else
+            trans_byte_max <= `UD trans_byte_max;
     end
     
     always @(posedge clk)
     begin
         case(state)
-            IDLE    : sda_out <= `UD 1'b1;
-            S_START : begin
+            IDLE  : sda_out <= `UD 1'b1;
+            S_START :
+            begin
                 if(start_h)
                     sda_out <= `UD 1'b0;
                 else if(dsu)
                     sda_out <= `UD send_data[7-trans_bit];
+                else
+                    sda_out <= `UD sda_out;
             end
-            SEND    : sda_out <= `UD send_data[7-trans_bit];
-            S_ACK   : begin
+            SEND  : sda_out <= `UD send_data[7-trans_bit];
+            S_ACK :
+            begin
                 if(trans_byte == ID_ADDR_BYTE && dsu && !w_r_2d)
                     sda_out <= `UD 1'b1;
                 else
-                    sda_out <= `UD 1'b0;
+                    sda_out <= `UD 1'h0;
             end
-            R_ACK   : begin
+            R_ACK :
+            begin
                 if(trans_byte < trans_byte_max)
                     sda_out <= `UD 1'b0;
                 else
@@ -240,11 +253,14 @@ module iic_dri #(
                         sda_out <= `UD 1'b1;
                 end
             end
-            STOP    : begin
+            STOP  :
+            begin
                 if(start_h)
                     sda_out <= `UD 1'b1;
+                else
+                    sda_out <= `UD sda_out;
             end
-            default : sda_out <= `UD 1'b1;
+            default: sda_out <= `UD 1'b1;
         endcase
     end
     
@@ -254,6 +270,8 @@ module iic_dri #(
         begin
             if(full_cycle)
                 receiv_data <= `UD {receiv_data[6:0],sda_in};
+            else
+                receiv_data <= `UD receiv_data;
         end
         else
             receiv_data <= `UD 8'd0;
@@ -263,6 +281,8 @@ module iic_dri #(
     begin
         if(state == RECEIV && trans_bit == 3'd7 && half_cycle)
             data_out <= `UD receiv_data;
+        else
+            data_out <= `UD data_out;
     end
     
     always @(posedge clk)
@@ -289,6 +309,8 @@ module iic_dri #(
         begin
             if(dsu)
                 trans_bit <= `UD trans_bit + 1'b1;
+            else
+                trans_bit <= `UD trans_bit;
         end
         else
             trans_bit <= `UD 3'd0;
@@ -302,7 +324,11 @@ module iic_dri #(
         begin
             if(dsu && trans_bit == 3'd7)
                 trans_byte <= `UD trans_byte + 1'b1;
+            else
+                trans_byte <= `UD trans_byte;
         end
+        else
+            trans_byte <= `UD trans_byte;
     end
     
     always @(posedge clk)
@@ -317,21 +343,45 @@ module iic_dri #(
     begin
         state_n = state;
         case(state)
-            IDLE   : if(start) state_n = S_START;
-            S_START: if(dsu)   state_n = SEND;
-            SEND   : if(trans_bit == 3'd7 & dsu) state_n = S_ACK;
-            S_ACK  :
+            IDLE  : if(start) state_n = S_START;
+            S_START : if(dsu) state_n = SEND;
+            SEND  : if(trans_bit == 3'd7 & dsu) state_n = S_ACK;
+            S_ACK :
+            begin
                 if(dsu)
                 begin
                     if(w_r_2d)
-                        state_n = (trans_byte < trans_byte_max) ? SEND : STOP;
+                    begin
+                        if(trans_byte < ID_ADDR_BYTE)
+                            state_n = SEND;
+                        else if(trans_byte < trans_byte_max)
+                            state_n = SEND;
+                        else
+                            state_n = STOP;
+                    end
                     else
-                        state_n = (trans_byte < ID_ADDR_BYTE) ? SEND :
-                                  (trans_byte == ID_ADDR_BYTE) ? S_START : RECEIV;
+                    begin
+                        if(trans_byte < ID_ADDR_BYTE)
+                            state_n = SEND;
+                        else if(trans_byte == ID_ADDR_BYTE)
+                            state_n = S_START;
+                        else
+                            state_n = RECEIV;
+                    end
                 end
-            RECEIV : if(trans_bit == 3'd7 & dsu) state_n = R_ACK;
-            R_ACK  : if(dsu) state_n = (trans_byte < trans_byte_max) ? RECEIV : STOP;
-            STOP   : if(dsu) state_n = IDLE;
+            end
+            RECEIV: if(trans_bit == 3'd7 & dsu) state_n = R_ACK;
+            R_ACK :
+            begin
+                if(dsu)
+                begin
+                    if(trans_byte < trans_byte_max)
+                        state_n = RECEIV;
+                    else
+                        state_n = STOP;
+                end
+            end
+            STOP  : if(dsu) state_n = IDLE;
             default: state_n = IDLE;
         endcase
     end

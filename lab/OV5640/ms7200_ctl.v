@@ -15,7 +15,6 @@ module ms7200_ctl(
     input               byte_over 
 );
     assign device_id = 8'h56;
-
 function [23:0] cmd_data;
 input [9:0] index;
     begin
@@ -319,7 +318,7 @@ input [9:0] index;
             9'd296 : cmd_data = {16'h2000, 8'h0F};
             9'd297 : cmd_data = {16'h2001, 8'h00};
             9'd298 : cmd_data = {16'h2002, 8'h00};
-            9'd299 : cmd_data = {16'h2003, 8'h01};
+            9'd299 : cmd_data = {16'h2003, 8'h01}; 
             9'd300 : cmd_data = {16'h209C, 8'h00};
             9'd301 : cmd_data = {16'h209D, 8'h00};
             9'd302 : cmd_data = {16'h209E, 8'h00};
@@ -331,7 +330,7 @@ input [9:0] index;
             9'd308 : cmd_data = {16'h0200, 8'h07};
             9'd309 : cmd_data = {16'h0215, 8'h01};
             9'd310 : cmd_data = {16'h0215, 8'h00};
-        endcase 
+       endcase 
     end
 endfunction
 
@@ -342,7 +341,6 @@ endfunction
     parameter    STA_RD = 7'b001_0000;
     parameter    SETING = 7'b010_0000;
     parameter    RD_BAK = 7'b100_0000;
-
     reg [ 6:0]   state;
     reg [ 6:0]   state_n;
     reg [ 8:0]   dri_cnt;
@@ -360,24 +358,26 @@ endfunction
     begin
         busy_1d <= busy;
         freq_rec_1d <= freq_rec;
-        if(state_n == STA_RD && dri_cnt == 9'd2 && busy_falling)
+        if(state_n ==STA_RD && dri_cnt == 9'd2 && busy_falling)
+        begin
             freq_rec_2d <= freq_rec_1d;
+        end
     end
     
     reg freq_ensure;
+    
     always @(posedge clk)
     begin
         if(!rstn)
             freq_ensure <= 1'b0;
         else if(state_n == SETING)
             freq_ensure <= 1'b0;
-        else if(state_n == STA_RD && dri_cnt == 9'd2 && busy_falling &&
-                (freq_rec_2d[17:16]==2'b00) && (freq_rec_1d[17:16] == 2'b10))
+        else if(state_n ==STA_RD && dri_cnt == 9'd2 && busy_falling && (freq_rec_2d[17:16]==2'b00) && (freq_rec_1d[17:16] == 2'b10))
             freq_ensure <= 1'b1;
         else
             freq_ensure <= freq_ensure;
     end
-
+    
     always @(posedge clk)
     begin
         if(!rstn)
@@ -391,30 +391,30 @@ endfunction
         state_n = state;
         case(state)
             IDLE     : state_n = CONECT;
-            CONECT   : begin
-                if(dri_cnt == 5'd1 && busy_falling && data_out == 8'h5A)
-                    state_n = INIT;
-            end
-            INIT     : begin
-                if(dri_cnt == 9'd299 && busy_falling)
-                    state_n = STA_RD;
-            end
-            WAIT     : begin
-                if(delay_cnt == 24'h989680)
-                    state_n = STA_RD;
-            end
-            STA_RD   : begin
-                if(dri_cnt == 9'd3 && busy_falling && freq_ensure)
-                    state_n = SETING;
-            end
-            SETING   : begin
-                if(dri_cnt == 5'd6 && busy_falling)
-                    state_n = STA_RD;
-            end
-            RD_BAK   : begin
-                if(dri_cnt == 9'd299 && busy_falling)
-                    state_n = WAIT;
-            end
+            CONECT   : if(dri_cnt == 5'd1 && busy_falling && data_out == 8'h5A)
+                            state_n = INIT;
+                        else
+                            state_n = state;
+            INIT     : if(dri_cnt == 9'd299 && busy_falling)
+                            state_n = STA_RD;
+                        else
+                            state_n = state;
+            WAIT     : if(delay_cnt == 24'h989680)
+                            state_n = STA_RD;
+                        else
+                            state_n = state;
+            STA_RD   : if(dri_cnt == 9'd3 && busy_falling && freq_ensure)
+                            state_n = SETING;
+                        else
+                            state_n = state;
+            SETING   : if(dri_cnt == 5'd6 && busy_falling)
+                            state_n = STA_RD;
+                        else
+                            state_n = state;
+            RD_BAK   : if(dri_cnt == 9'd299 && busy_falling)
+                            state_n = WAIT;
+                        else
+                            state_n = state;
             default  : state_n = IDLE;
         endcase
     end
@@ -426,10 +426,18 @@ endfunction
         else
         begin
             case(state)
-                IDLE, WAIT : dri_cnt <= 5'd0;
-                CONECT, INIT, STA_RD, SETING, RD_BAK :
-                    if(busy_falling)
-                        dri_cnt <= dri_cnt + 1'b1;
+                IDLE,WAIT : dri_cnt <= 5'd0;
+                CONECT   : if(busy_falling)
+                                dri_cnt <= (dri_cnt == 5'd1) ? 5'd0 : dri_cnt + 5'd1;
+                INIT     : if(busy_falling)
+                                dri_cnt <= (dri_cnt == 9'd299) ? 5'd0 : dri_cnt + 5'd1;
+                STA_RD   : if(busy_falling)
+                                dri_cnt <= (dri_cnt == 5'd3) ? 5'd0 : dri_cnt + 5'd1;
+                SETING   : if(busy_falling)
+                                dri_cnt <= (dri_cnt == 5'd6) ? 5'd0 : dri_cnt + 5'd1;
+                RD_BAK   : if(busy_falling)
+                                dri_cnt <= (dri_cnt == 9'd299) ? 5'd0 : dri_cnt + 5'd1;
+                default  : dri_cnt <= 5'd0;
             endcase
         end
     end
@@ -460,8 +468,8 @@ endfunction
                 INIT,
                 SETING,
                 RD_BAK,
-                STA_RD  : iic_trig <= busy_falling;
-                default : iic_trig <= 1'd0;
+                STA_RD   : iic_trig <= busy_falling;
+                default  : iic_trig <= 1'd0;
             endcase
         end
     end
@@ -474,23 +482,61 @@ endfunction
         begin
             case(state)
                 IDLE     : w_r <= 1'b1;
-                CONECT   : begin
-                    if(dri_cnt == 5'd0 && busy_falling)
-                        w_r <= 1'b0;
-                    else if(dri_cnt == 5'd1 && busy_falling)
-                        w_r <= 1'b1;
-                end
-                INIT     : if(dri_cnt == 9'd299 && busy_falling) w_r <= 1'b0;
-                STA_RD   : if(dri_cnt == 9'd3 && busy_falling && freq_ensure) w_r <= 1'b1;
-                SETING   : if(dri_cnt == 5'd6 && busy_falling) w_r <= 1'b0;
+                CONECT   : if(dri_cnt == 5'd0 && busy_falling)
+                                w_r <= 1'b0;
+                            else if(dri_cnt == 5'd1 && busy_falling)
+                                w_r <= 1'b1;
+                INIT     : if(dri_cnt == 9'd299 && busy_falling)
+                                w_r <= 1'b0;
+                STA_RD   : if(dri_cnt == 9'd3 && busy_falling && freq_ensure)
+                                w_r <= 1'b1;
+                SETING   : if(dri_cnt == 5'd6 && busy_falling)
+                                w_r <= 1'b0;
+                default  : w_r <= w_r;
+            endcase
+        end
+    end
+    
+    always @(posedge clk)
+    begin
+        if(!rstn)
+            cmd_index <= 6'd0;
+        else
+        begin
+            case(state)
+                IDLE,
+                CONECT   : cmd_index <= 6'd0;
+                INIT     : if(byte_over)
+                                cmd_index <= cmd_index + 1'b1;
+                default  : cmd_index <= cmd_index;
+            endcase
+        end
+    end
+    
+    always @(posedge clk)
+    begin
+        if(!rstn)
+            freq_rec <= 31'd0;
+        else
+        begin
+            case(state)
+                STA_RD   : if(byte_over)
+                                case(dri_cnt)
+                                    9'd0    : freq_rec <= {freq_rec[31:8],data_out};
+                                    9'd1    : freq_rec <= {freq_rec[31:16],data_out,freq_rec[7:0]};
+                                    9'd2    : freq_rec <= {freq_rec[31:24],data_out,freq_rec[15:0]};
+                                    9'd3    : freq_rec <= {data_out,freq_rec[23:0]};
+                                    default : freq_rec <= freq_rec;
+                                endcase
+                default  : freq_rec <= freq_rec;
             endcase
         end
     end
     
     reg [23:0] cmd_iic;
-    always @(posedge clk)
+    always@(posedge clk)
     begin
-        if(!rstn)
+        if(~rstn)
             cmd_iic <= 0;
         else if(state == IDLE)
             cmd_iic <= 24'd0;
@@ -508,16 +554,46 @@ endfunction
         else
         begin
             case(state)
-                IDLE     : begin addr <= 16'h0003; data_in <= 8'h5A; end
+                IDLE     : begin
+                    addr    <= 16'h0003;
+                    data_in <= 8'h5A;
+                end
                 CONECT   : if(dri_cnt == 5'd1 && busy_falling && data_out == 8'h5A)
-                           begin addr <= cmd_iic[23:8]; data_in <= cmd_iic[7:0]; end
-                INIT, WAIT, RD_BAK :
-                           begin addr <= cmd_iic[23:8]; data_in <= cmd_iic[7:0]; end
-                default  : begin addr <= addr; data_in <= data_in; end
+                            begin
+                                addr    <= cmd_iic[23:8];
+                                data_in <= cmd_iic[ 7:0];
+                            end
+                INIT,
+                WAIT,
+                RD_BAK   : begin
+                    addr    <= cmd_iic[23:8];
+                    data_in <= cmd_iic[ 7:0];
+                end
+                STA_RD   : case(dri_cnt)
+                                9'd0   : begin addr <= 16'h209C; data_in <= 8'h00; end
+                                9'd1   : begin addr <= 16'h209D; data_in <= 8'h00; end
+                                9'd2   : begin addr <= 16'h209E; data_in <= 8'h00; end
+                                9'd3   : begin addr <= 16'h209F; data_in <= 8'h00; end
+                                default: begin addr <= 0; data_in <= 0; end
+                            endcase
+                SETING   : case(dri_cnt)
+                                9'd0   : begin addr <= 16'h1010; data_in <= 8'h01; end
+                                9'd1   : begin addr <= 16'h1024; data_in <= 8'h00; end
+                                9'd2   : begin addr <= 16'h0200; data_in <= 8'h0; end
+                                9'd3   : begin addr <= 16'h1024; data_in <= 8'h70; end
+                                9'd4   : begin addr <= 16'h0200; data_in <= 8'h07; end
+                                9'd5   : begin addr <= 16'h0215; data_in <= 8'h01; end
+                                9'd6   : begin addr <= 16'h0215; data_in <= 8'h00; end
+                                default: begin addr <= 16'h0215; data_in <= 8'h00; end
+                            endcase
+                default  : begin
+                    addr    <= 0;
+                    data_in <= 0;
+                end
             endcase
         end
     end
-    
+
     always @(posedge clk)
     begin
         if(!rstn)

@@ -13,12 +13,10 @@ module wr_buf #(
 ) (                               
     input                         ddr_clk,
     input                         ddr_rstn,
-                                  
     input                         wr_clk,
     input                         wr_fsync,
     input                         wr_en,
     input  [PIX_WIDTH- 1'b1 : 0]  wr_data,
-    
     input                         rd_bac,
     output                        ddr_wreq,
     output [ADDR_WIDTH- 1'b1 : 0] ddr_waddr,
@@ -27,7 +25,6 @@ module wr_buf #(
     input                         ddr_wdone,
     output [8*DQ_WIDTH- 1'b1 : 0] ddr_wdata,
     input                         ddr_wdata_req,
-    
     output [FRAME_CNT_WIDTH-1 :0] frame_wcnt,
     output                        frame_wirq
 );
@@ -72,7 +69,7 @@ module wr_buf #(
 
     reg [11:0]                 x_cnt;
     reg [11:0]                 y_cnt;
-    reg [31 : 0]  write_data;
+    reg [31 : 0]               write_data;
     reg [PIX_WIDTH- 1'b1 : 0]  wr_data_1d;
     reg                        write_en;
     reg [11:0]                 wr_addr=0;
@@ -83,9 +80,7 @@ generate
         always @(posedge wr_clk)
         begin
             wr_data_1d <= wr_data;
-            
             write_en <= (x_cnt[1:0] != 0);
-            
             if(x_cnt[1:0] == 2'd1)
                 write_data <= {wr_data[7:0],wr_data_1d};
             else if(x_cnt[1:0] == 2'd2)
@@ -101,7 +96,6 @@ generate
         always @(posedge wr_clk)
         begin
             wr_data_1d <= wr_data;
-            
             write_en <= x_cnt[0];
             if(x_cnt[0])
                 write_data <= {wr_data,wr_data_1d};
@@ -165,16 +159,15 @@ endgenerate
     wire [255:0] rd_wdata;
     reg  [255:0] rd_wdata_1d=0;
     wr_fram_buf wr_fram_buf (
-        .wr_data            (  write_data     ),            
-        .wr_addr            (  wr_addr        ),            
-        .wr_en              (  write_en       ),                   
-        .wr_clk             (  wr_clk         ),                      
-        .wr_rst             (  ~ddr_rstn_2d   ),   
-                          
-        .rd_addr            (  rd_addr        ),        
-        .rd_data            (  rd_wdata       ),           
-        .rd_clk             (  ddr_clk        ),                      
-        .rd_rst             (  ~ddr_rstn      )                       
+        .wr_data            (  write_data     ),
+        .wr_addr            (  wr_addr        ),
+        .wr_en              (  write_en       ),
+        .wr_clk             (  wr_clk         ),
+        .wr_rst             (  ~ddr_rstn_2d   ),
+        .rd_addr            (  rd_addr        ),
+        .rd_data            (  rd_wdata       ),
+        .rd_clk             (  ddr_clk        ),
+        .rd_rst             (  ~ddr_rstn      )
     );
     
     reg rd_pulse_1d,rd_pulse_2d,rd_pulse_3d;
@@ -195,7 +188,6 @@ endgenerate
     always @(posedge ddr_clk)
     begin 
         ddr_wr_req_1d <= ddr_wr_req;
-        
         if(rd_trig)
             ddr_wr_req <= 1'b1;
         else if(ddr_wdata_req)

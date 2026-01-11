@@ -1,5 +1,4 @@
 `timescale 1ns / 1ps
-
 `define UD #1
 module wr_cmd_trans #(
     parameter                        CTRL_ADDR_WIDTH      = 28,
@@ -7,7 +6,6 @@ module wr_cmd_trans #(
 )  (
     input                            clk,
     input                            rstn,
-                                     
     input                            wr_cmd_en,
     input  [CTRL_ADDR_WIDTH-1:0]     wr_cmd_addr,
     input  [31: 0]                   wr_cmd_len,
@@ -16,7 +14,6 @@ module wr_cmd_trans #(
     input                            wr_bac,  
     input  [MEM_DQ_WIDTH*8-1:0]      wr_ctrl_data,
     output                           wr_data_re,
-                                     
     output reg                       wr_en=0,        
     output reg [CTRL_ADDR_WIDTH-1:0] wr_addr=0,      
     output reg [ 3: 0]               wr_id=0,        
@@ -25,14 +22,12 @@ module wr_cmd_trans #(
     output [MEM_DQ_WIDTH*8-1:0]      wr_data,
     input                            wr_ready,
     input                            wr_done,
-    
     input                            rd_cmd_en,
     input  [CTRL_ADDR_WIDTH-1:0]     rd_cmd_addr,
     input  [31: 0]                   rd_cmd_len,
     output reg                       rd_cmd_ready=1,
     output reg                       rd_cmd_done=0,
     input                            read_en,
-    
     output reg                       rd_en        =0,                 
     output reg [CTRL_ADDR_WIDTH-1:0] rd_addr      =0,           
     output reg [3:0]                 rd_id        =0,           
@@ -50,7 +45,6 @@ module wr_cmd_trans #(
     begin
         wr_done_1d <= wr_done;
         wr_cmd_en_1d <= wr_cmd_en;
-        
         if(wr_cmd_trig)
             wr_trans_len <= wr_cmd_len;
         else
@@ -149,7 +143,6 @@ module wr_cmd_trans #(
                     wr_len <= wr_trans_len - wr_cnt - 1'b1;
                 else
                     wr_len <= 4'd15;
-                    
                 wr_addr <= wr_addr + {wr_len,3'd0} + 4'b1000;
             end 
             else
@@ -219,8 +212,6 @@ module wr_cmd_trans #(
             rd_trans_len <= rd_cmd_len;
         else
             rd_trans_len <= rd_trans_len;
-            
-            
         if(~rstn)
             read_enable <= 1'b0;
         else if(rd_cmd_trig)
@@ -236,7 +227,6 @@ module wr_cmd_trans #(
     always @(posedge clk)
     begin
         read_enable_1d <= read_enable;
-        
         if(~rstn)
             rd_en <= 1'd0;
         else if(~read_enable_1d && read_enable)
@@ -332,7 +322,6 @@ module wr_cmd_trans #(
                     rd_len <= rd_cmd_len - rd_cnt - 1'b1;
                 else
                     rd_len <= 4'd15;
-
                 rd_addr <= rd_addr + {rd_len,3'd0} + 4'b1000;
             end 
             else

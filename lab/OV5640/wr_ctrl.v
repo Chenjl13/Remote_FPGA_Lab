@@ -152,7 +152,7 @@ module wr_ctrl #(
     end
      
     assign wr_cmd_done = axi_wlast;
-    assign axi_wdata = wr_data;
+    assign axi_wdata = wr_data ;
     assign axi_wvalid = axi_wready;
     assign wr_bac = axi_wvalid && (~axi_wready && axi_wready_1d);
 
