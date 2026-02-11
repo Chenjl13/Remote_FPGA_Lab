@@ -3,7 +3,7 @@
 🎯*We built a system based on FPGA and Raspberry Pi, and we also designed a fabulous website embedded with our system.
 
 ## Our Website
-We designed a colorful and portable website, click [here](./Tmux.md) to quickly go through our website!
+We designed a colorful and portable website, click [here](./website.md) to quickly go through our website!
 
 <img src="images/Website/Login.png" width="600">
 
