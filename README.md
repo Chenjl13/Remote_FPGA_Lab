@@ -12,6 +12,6 @@ We designed a colorful and portable website, click [here](./website.md) to quick
 
 
 ## IP Camera
-We uses web camera of raspberry pi 5 to record the scenories in the lab, click [here](IPCAMERA/README.md) to view our camera configuration!
+We uses web camera of raspberry pi 5 to record the scenories in the lab, click [here](IPCamera/README.md) to view our camera configuration!
 <img src="images/IPCamera/UsbCamera.jpg" width="400">
 
