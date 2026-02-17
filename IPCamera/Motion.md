@@ -55,6 +55,8 @@ sudo service motion start
 sudo motion
 ```
 
+<img src="../images/IPCamera/Motion1.png">
+<img src="../images/IPCamera/Motion2.png">
 
 
 
