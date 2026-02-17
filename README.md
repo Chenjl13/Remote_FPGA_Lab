@@ -5,10 +5,10 @@
 ## Our Website
 We designed a colorful and portable website, click [here](./website.md) to quickly go through our website!
 
-<img src="images/Website/Login.png" width="600">
+<img src="images/Website/Login.png">
 
 ## Logic Analyzer
-<img src="images/LogicAnalyzer/I2C.png" width="600">
+<img src="images/LogicAnalyzer/I2C.png">
 
 
 ## IP Camera
