@@ -47,6 +47,14 @@ ps a
 ```
 sudo kill -9 PID
 ```
+## 12. Enable Motion
+```
+sudo service motion start
+```
+```
+sudo motion
+```
+
 
 
 
