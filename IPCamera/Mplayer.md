@@ -4,7 +4,7 @@
 ```
 sudo raspi-config
 ```
-<img src="images/IPCamera/Mplayer1.png" width="600">
+<img src="../images/IPCamera/Mplayer1.png">
 
 ## 2. Before turning on, make sure you connect the Usb of Raspberry with the Usb of camera!
 
@@ -20,10 +20,11 @@ sudo apt-get install mplayer -y
 ```
 sudo apt-get install fswebcam -y
 ```
-<img src="images/IPCamera/Mplayer2.png" width="600">
+<img src="../images/IPCamera/Mplayer2.png">
 
 ## 6. watch the video
 ```
 sudo mplayer tv://
 ```
-<img src="images/IPCamera/Mplayer3.png" width="600">
+<img src="../images/IPCamera/Mplayer3.png">
+
