@@ -2,6 +2,7 @@
 
 🎯*We built a system based on FPGA and Raspberry Pi, and we also designed a fabulous website embedded with our system.
 
+# Hardware
 <img src="images/Hardware.png">
 
 ## Our Website
