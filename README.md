@@ -1,8 +1,9 @@
-# Remote_FPGA_Lab
+<h1 align="center">Remote_FPGA_Lab</h1>
 
-🎯*We built a system based on FPGA and Raspberry Pi, and we also designed a fabulous website embedded with our system.
+<p align="center">
+  <b>🎯*We built a system based on FPGA and Raspberry Pi, and we also designed a fabulous website embedded with our system.</b>
+</p>
 
-# Hardware
 <img src="images/Hardware.png">
 
 ## Our Website
